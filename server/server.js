@@ -1,3 +1,5 @@
+require('dotenv').config(); // Load environment variables from .env file
+
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
@@ -5,43 +7,41 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(bodyParser.json());
 
-// User credentials (stored in memory for simplicity)
-const users = { admin: 'password123' }; // Add more users as needed
-const secretKey = 'your_secret_key'; // Replace with a secure secret key
+const secretKey = process.env.SECRET_KEY; // Load the secret key from .env
 
-// Login API
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-
-  if (users[username] && users[username] === password) {
-    // Generate a JWT token
-    const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
-    res.json({ token });
-  } else {
-    res.status(401).json({ message: 'Invalid username or password' });
-  }
-});
-
-// Protected route example (optional)
-app.get('/protected', (req, res) => {
-  const authHeader = req.headers.authorization;
-
-  if (authHeader) {
-    const token = authHeader.split(' ')[1];
-
-    jwt.verify(token, secretKey, (err, user) => {
-      if (err) {
-        return res.sendStatus(403);
-      }
-      res.json({ message: 'Welcome to the protected route!', user });
-    });
-  } else {
-    res.sendStatus(401);
-  }
-});
-
-// Start the server
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+// Load users from the file
+const loadUsers = () => {
+    try {
+      const data = fs.readFileSync('users.json', 'utf8');
+      return JSON.parse(data);
+    } catch (err) {
+      console.error('Error reading users.json:', err);
+      return {};
+    }
+  };
+  
+  
+  // Login API
+  app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+  
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required' });
+    }
+  
+    const users = loadUsers();
+  
+    if (users[username] && users[username] === password) {
+      // Generate a JWT token
+      const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
+      return res.json({ token });
+    } else {
+      return res.status(401).json({ message: 'Invalid username or password' });
+    }
+  });
+  
+  // Start the server
+  const PORT = 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
