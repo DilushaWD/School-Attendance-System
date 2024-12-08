@@ -74,7 +74,7 @@ Open login.html in your preferred browser or use a live server to view the appli
 
 ## Login Credentials for Testing
 
-Username	Password
+Username - Password
 
 admin -	admin123
 
