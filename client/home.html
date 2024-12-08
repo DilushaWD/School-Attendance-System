@@ -3,40 +3,99 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
+  <title>Home - School Attendance System</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
+      height: 100vh;
+      background-image: url('image.png'); /* Add background image */
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed; /* Keep background fixed */
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      background-color: #f0f0f0;
     }
-    div {
+
+    .container {
       text-align: center;
+      background-color: rgba(0, 0, 0, 0.6); /* Darker background to contrast with the image */
+      color: white; /* White text for contrast */
+      padding: 40px;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
     }
+
+    h2 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 1.1em;
+      margin-bottom: 30px;
+    }
+
     button {
-      padding: 10px;
+      padding: 12px 25px;
       background-color: #dc3545;
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 5px;
       cursor: pointer;
+      font-size: 1.2em;
     }
+
     button:hover {
       background-color: #a71d2a;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 0.8em;
+      color: #ddd;
     }
   </style>
 </head>
 <body>
-  <div>
-    <h2>Welcome to the Home Page</h2>
+  <div class="container">
+    <h2>Welcome, <span id="username"></span></h2>
+    <p>Your one-stop portal to track and manage student attendance efficiently.</p>
     <button id="logoutButton">Logout</button>
   </div>
 
-  <script src="script.js"></script>
+  <footer>
+    <p>© 2024 School Attendance System. All rights reserved.</p>
+    <script>
+      // Base URL of the server API
+      const API_BASE_URL = 'http://localhost:3001';
+
+      // Check if the user is logged in
+      const token = localStorage.getItem('token');
+      if (!token) {
+        // Redirect to login page if not logged in
+        window.location.href = 'login.html';
+      } else {
+        // Decode username from token (if JWT is used) or display default username
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
+          document.getElementById('username').textContent = payload.username || 'User';
+        } catch (error) {
+          console.error('Error decoding token:', error);
+          document.getElementById('username').textContent = 'User';
+        }
+      }
+
+      // Handle logout button click
+      document.getElementById('logoutButton').addEventListener('click', () => {
+        localStorage.removeItem('token'); // Clear the token
+        alert('You have logged out.');
+        window.location.href = 'login.html'; // Redirect to login page
+      });
+    </script>
 </body>
 </html>
