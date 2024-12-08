@@ -76,9 +76,9 @@ Open login.html in your preferred browser or use a live server to view the appli
 
 Username - Password
 
-admin -	admin123
+"Admin": "password123",
 
-user1 -	user123
+"Pasindu": "mypassword",
 
-testuser - test123
+"Vishmi": "securepass"
 
