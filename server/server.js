@@ -1,31 +1,29 @@
-// Load environment variables from .env file
+const express = require('express');
+const cors = require('cors'); // Import cors middleware
+const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
+const fs = require('fs');
 require('dotenv').config();
 
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const bodyParser = require('body-parser');
-const fs = require('fs');
-
 const app = express();
+app.use(cors()); // Enable CORS for all routes
 app.use(bodyParser.json());
 
-// Load the secret key from .env
 const secretKey = process.env.SECRET_KEY;
 
-// Ensure secretKey is not undefined
 if (!secretKey) {
   console.error('SECRET_KEY is not set in the .env file');
-  process.exit(1); // Exit if the secret key is not found
+  process.exit(1);
 }
 
 // Load users from the users.json file
 const loadUsers = () => {
   try {
     const data = fs.readFileSync('users.json', 'utf8');
-    return JSON.parse(data); // Parse and return users as an object
+    return JSON.parse(data);
   } catch (err) {
     console.error('Error reading users.json:', err);
-    return {}; // Return an empty object in case of an error
+    return {};
   }
 };
 
@@ -39,9 +37,7 @@ app.post('/login', (req, res) => {
 
   const users = loadUsers();
 
-  // Check if the username exists and password matches
   if (users[username] && users[username] === password) {
-    // Generate a JWT token with a 1-hour expiration
     const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
     return res.json({ token });
   } else {
